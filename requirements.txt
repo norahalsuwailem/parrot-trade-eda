@@ -1,0 +1,9 @@
+pandas
+numpy
+matplotlib
+seaborn
+openpyxl
+pycountry
+plotly
+streamlit>=1.40
+jupyter
