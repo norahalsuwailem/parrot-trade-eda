@@ -4,6 +4,8 @@
 
 التشغيل:  streamlit run app.py
 """
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -126,8 +128,9 @@ def svg(species, family="True parrots", size=220):
 # ═══════════════════════════ قراءة البيانات ═══════════════════════════
 @st.cache_data
 def load_data():
-    trade = pd.read_csv("data/trade_clean.csv", low_memory=False)
-    parrots = pd.read_csv("data/parrots_clean.csv")
+    data_dir = Path(__file__).parent / "data"   # يشتغل محلياً وعلى Streamlit Cloud
+    trade = pd.read_csv(data_dir / "trade_clean.csv", low_memory=False)
+    parrots = pd.read_csv(data_dir / "parrots_clean.csv")
 
     # أسماء الدول بالعربي + كود ISO-3 للخرائط
     codes = pd.concat([trade["exporter_code"], trade["importer_code"]]).dropna().unique()
