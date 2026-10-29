@@ -65,23 +65,20 @@ This project joins **two real datasets** to answer that question:
 
 ---
 
-## 🎛️ The dashboard (Arabic, RTL)
+## 🎛️ The dashboard: «جواز سفر الببغاء» (Parrot Passport)
 
-An interactive **Arabic** Streamlit dashboard, with real photos (Wikimedia Commons) and a hand-drawn illustration of each featured species in its real colours.
+An interactive **Arabic** Streamlit dashboard told as a story by **Tsuki**, my green-cheeked conure 💚. It has a **light and dark mode**, floating feathers, real photos and hand-drawn illustrations of each featured species in its real colours.
 
 | Tab | What it shows |
 |---|---|
-| 🌍 التجارة العالمية | World map, an animated map over 50 years (▶️), top countries, yearly trade by source with the 1992 and 2005 bans marked, Sankey of the biggest trade routes |
-| 🦜 تعرّف على ببغاء | Pick any species and see a real photo or illustration, size rank, wild share, range map, trade history and care notes for pet species |
-| ⚖️ قارني بين ببغاوين | Put two species side by side: photos, a stats table, trade over time and their real size |
-| 🎯 أي ببغاء يناسبك؟ | A 6-question quiz (space, noise, talking, time, years, experience) that suggests the 3 best pet parrots |
-| 🖼️ ألبوم الببغاوات | An album of 20 well-known species, as real photos or illustrations |
-| 🪶 صفات الببغاوات | Does size, diet or habitat predict trade? Scatter, bars, box plot, heatmap |
-| ⚠️ منطقة الخطر | Set your own thresholds and see the species at risk |
+| 📖 القصة | A step-by-step story in 8 screens (next / back): how many parrots, wild vs captive by decade (100-dot chart), *guess the most traded parrot*, *does size matter?*, the danger zone, Saudi Arabia. Includes an animated world map over 50 years |
+| 🦜 الببغاوات | Meet any species (photo or drawing, stats, trade history, range map, care notes), compare two species side by side, and an album of 19 species |
+| 🎯 أي ببغاء يناسبكم؟ | A 6-question quiz (space, noise, talking, time, years, experience) that suggests the 3 best pet parrots |
+| 📊 التحليل | World trade (map, top countries, Sankey of routes), parrot traits (scatter, bars, box plot, heatmap) and the danger zone with your own thresholds |
 | 🇸🇦 السعودية والخليج | GCC imports, what they buy and where it comes from |
 | 📋 البيانات | Data preview, summary statistics and CSV download |
 
-**Sidebar filters:** year slider, body-mass slider, and clickable pills for source, family and diet.
+**Filters:** one «الفلاتر» button with years, body mass, and clickable pills for source, family and diet.
 
 <p align="center">
   <img src="assets/screenshots/02_meet_a_parrot.png" alt="Meet a Parrot tab showing the green-cheeked conure profile" width="49%">
