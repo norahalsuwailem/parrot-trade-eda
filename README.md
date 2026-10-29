@@ -75,8 +75,8 @@ An interactive **Arabic** Streamlit dashboard told as a story by **Tsuki**, my g
 | 🦜 الببغاوات | Meet any species (photo or drawing, stats, trade history, range map, care notes), compare two species side by side, and an album of 19 species |
 | 🎯 أي ببغاء يناسبكم؟ | A 5-question quiz (space, noise, talking, time, experience) that suggests the 3 best pet parrots |
 | 📊 التحليل | World trade (map, top countries, Sankey of routes), parrot traits (scatter, bars, box plot, heatmap) and the danger zone with your own thresholds |
-| 💡 الإنسايتس | All 13 insights told by Tsuki as chat bubbles, one at a time («كمّل يا تسوكي») or all at once |
 | 🇸🇦 السعودية والخليج | GCC imports, what they buy and where it comes from |
+| 💡 وش اكتشفنا؟ | All 13 insights told by Tsuki as chat bubbles, one at a time («كمّل يا تسوكي») or all at once |
 | 📋 البيانات | Data preview, summary statistics and CSV download |
 
 **Filters:** one «الفلاتر» button with years, body mass, and clickable pills for source, family and diet.
