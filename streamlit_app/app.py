@@ -617,7 +617,7 @@ with tab_birds:
             html(photo_html(pick, 380) if pv == "📷 صورة" and has_photo(pick)
                  else f'<div class="center">{draw(pick, 300, b["family"])}</div>')
             if pick == "Pyrrhura molinae":
-                tsuki_says("هذا أنا! 💚 أهدأ أنواع الكنيور ومناسب للشقق.")
+                tsuki_says("هذا أنا! 💚 أفضل أنواع الببغاوات وأجملهم أكيد 😎")
             elif info:
                 note(f"✨ {info['fact']}")
         with c2:
