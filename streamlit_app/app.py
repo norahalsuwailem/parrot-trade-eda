@@ -14,8 +14,8 @@ import pycountry
 import streamlit as st
 
 from content_ar import (CITES_FAMILY, DIET_AR, FAMILY_AR, FEATURED, GULF, HABITAT_AR,
-                        HOME_DIET, PET_PROFILE, PHOTOS, SOURCE_AR, country_ar, display_name,
-                        name_ar, photo_url)
+                        HOME_DIET, PET_PROFILE, SOURCE_AR, country_ar, display_name, has_photo,
+                        name_ar, photo_credit, photo_url)
 from parrot_art import parrot_svg
 
 st.set_page_config(page_title="ريش بلا حدود 🦜", page_icon="🦜", layout="wide")
@@ -117,7 +117,7 @@ section[data-testid="stSidebar"] { background: #0F2A1F; border-left: 1px solid #
 .photo .cap { font-size: 12px; color: #93A399; padding: 6px 10px; direction: ltr; text-align: left; }
 .album { transition: transform .2s, border-color .2s; }
 .album:hover { transform: translateY(-5px); border-color: rgba(242,183,5,.5); }
-.album .ph { width: 100%; height: 190px; object-fit: cover; border-radius: 14px; margin-bottom: 8px; }
+.album .ph { width: 100%; height: 190px; object-fit: cover; object-position: center 30%; border-radius: 14px; margin-bottom: 8px; }
 
 /* ── اللعبة والمقارنة ── */
 .match { background: rgba(244,239,227,.05); border: 1px solid rgba(244,239,227,.12); border-radius: 22px;
@@ -175,10 +175,10 @@ def svg(species, family="True parrots", size=220):
 
 def photo_html(species, h=320):
     """صورة حقيقية من ويكيميديا مع اسم المصوّر والرخصة."""
-    file, author, lic = PHOTOS[species]
+    credit = photo_credit(species)
+    cap = f'<div class="cap">{credit}</div>' if credit else ""
     return (f'<div class="photo"><img src="{photo_url(species, 600)}" style="height:{h}px" loading="lazy" '
-            f'alt="{name_ar(species)}">'
-            f'<div class="cap">📷 {author} · {lic} · Wikimedia Commons</div></div>')
+            f'alt="{name_ar(species)}">{cap}</div>')
 
 
 # ═══════════════════════════ قراءة البيانات ═══════════════════════════
@@ -394,7 +394,7 @@ with tab_meet:
     with c1:
         # لو عندنا صورة حقيقية، نخلي المستخدم يختار: صورة أو رسمة
         view = "🎨 رسمة"
-        if pick in PHOTOS:
+        if has_photo(pick):
             view = st.segmented_control("العرض", ["📷 صورة حقيقية", "🎨 رسمة"], default="📷 صورة حقيقية",
                                         key="meet_view", label_visibility="collapsed") or "📷 صورة حقيقية"
         if view.startswith("📷"):
@@ -467,7 +467,7 @@ with tab_meet:
 # ───────────────────────── ٣. قارني بين ببغاوين ─────────────────────────
 def pic_or_svg(species, family, h=260):
     """صورة حقيقية لو موجودة، وإلا رسمة."""
-    if species in PHOTOS:
+    if has_photo(species):
         return photo_html(species, h)
     return f'<div style="text-align:center">{parrot_svg(species, family, h - 40)}</div>'
 
@@ -534,7 +534,7 @@ with tab_cmp:
 # ───────────────────────── ٤. أي ببغاء يناسبك؟ ─────────────────────────
 with tab_quiz:
     st.markdown("### 🎯 أي ببغاء يناسبك؟")
-    st.caption("جاوبي على 6 أسئلة، وأطلع لك أنسب 3 ببغاوات من 16 نوع مشهور. (تقريبي وللمتعة 😄)")
+    st.caption("جاوبي على 6 أسئلة، وأطلع لك أنسب 3 ببغاوات من 15 نوع مشهور. (تقريبي وللمتعة 😄)")
     q1, q2 = st.columns(2)
     space = q1.radio("🏠 وين بيعيش الطير؟", ["شقة صغيرة", "شقة كبيرة أو بيت", "بيت كبير وفيه غرفة للطير"], index=1)
     noise = q2.radio("🔊 كم تتحملين الإزعاج؟", ["لازم يكون هادئ", "شوي عادي", "ما يهمني أبداً"], index=1)
@@ -609,16 +609,16 @@ with tab_album:
     a1, a2 = st.columns([1, 2])
     album_view = a1.segmented_control("العرض", ["📷 صور حقيقية", "🎨 رسومات"], default="📷 صور حقيقية",
                                       key="album_view", label_visibility="collapsed") or "📷 صور حقيقية"
-    a2.caption("الصور من Wikimedia Commons، والرسومات مرسومة بالكود بألوان كل نوع. "
+    a2.caption("الصور اخترتها أنا أو من Wikimedia Commons، والرسومات مرسومة بالكود بألوان كل نوع. "
                "للتفاصيل اختاري النوع من تبويب «تعرّف على ببغاء».")
     album = parrots[parrots["species"].isin(FEATURED)].sort_values("total_traded", ascending=False)
     cols = st.columns(4)
     for i, (_, r) in enumerate(album.iterrows()):
         f = FEATURED[r["species"]]
         traded = fmt(r["total_traded"]) + " طير" if r["total_traded"] else "ما انباع أبداً 🌿"
-        if album_view.startswith("📷") and r["species"] in PHOTOS:
+        if album_view.startswith("📷") and has_photo(r["species"]):
             pic = (f'<img class="ph" src="{photo_url(r["species"], 400)}" loading="lazy" '
-                   f'title="📷 {PHOTOS[r["species"]][1]} · {PHOTOS[r["species"]][2]}">')
+                   f'alt="{f["ar"]}" title="{photo_credit(r["species"])}">')
         else:
             pic = parrot_svg(r["species"], r["family"], 170)
         with cols[i % 4]:

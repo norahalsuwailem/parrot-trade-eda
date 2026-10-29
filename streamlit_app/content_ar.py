@@ -2,8 +2,13 @@
 المحتوى العربي للداشبورد: الترجمات، وأسماء الدول، ومعلومات الأنواع المشهورة.
 البيانات نفسها تبقى بالإنجليزي، ونترجمها وقت العرض فقط.
 """
-import re
+import base64
 import gettext
+import re
+from functools import lru_cache
+from pathlib import Path
+from urllib.parse import quote
+
 import pycountry
 
 # ─────────────── ترجمة القيم ───────────────
@@ -132,11 +137,6 @@ FEATURED = {
         origin="وسط أفريقيا",
         length="33 سم", life="40–60 سنة، وأحياناً أكثر", talk="ممتاز (من أذكى الطيور)", noise="متوسط",
         fact="صار في الملحق الأول (الأشد حماية) سنة 2016، وتجارته وقفت تقريباً بعدها."),
-    "Psittacus timneh": dict(
-        ar="التيمني", emoji="🩶", pet=True,
-        origin="غرب أفريقيا",
-        length="29 سم", life="40–60 سنة", talk="ممتاز", noise="متوسط",
-        fact="كان يُعتبر نوعاً فرعياً من الكاسكو، وفُصل لنوع مستقل."),
     "Myiopsitta monachus": dict(
         ar="ببغاء الراهب (الكويكر)", emoji="🏠", pet=True,
         origin="الأرجنتين، الأوروغواي",
@@ -214,6 +214,7 @@ EXTRA_NAMES = {
     "Agapornis nigrigenis": "طائر الحب أسود الخد",
     "Eclectus roratus": "الإكلكتوس",
     "Nymphicus hollandicus": "الكوكتيل",
+    "Psittacus timneh": "التيمني",
 }
 
 
@@ -240,7 +241,6 @@ PHOTOS = {
     "Agapornis personatus": ("Agapornis_personatus_-Serengeti,_Tanzania-8.jpg", "Demetrius John Kessy", "CC BY 2.0"),
     "Agapornis roseicollis": ("Rosy-faced_lovebird_(Agapornis_roseicollis_roseicollis)_2.jpg", "Charles J. Sharp", "CC BY-SA 4.0"),
     "Psittacus erithacus": ("Perroquet_à_Yampopo_Beach_-_Douala.jpg", "Florettesokeng", "CC BY-SA 4.0"),
-    "Psittacus timneh": ("Psittacus_erithacus_timneh-parrot_on_cage.jpg", "Peter Fuchs", "CC BY-SA 2.0"),
     "Myiopsitta monachus": ("Monk_parakeet_(Myiopsitta_monachus)_Santiago.jpg", "Charles J. Sharp", "CC BY-SA 4.0"),
     "Alexandrinus krameri": ("African_Rose-ringed_Parakeet,_Tendaba,_Gambia_1.jpg", "danielskatz", "CC BY 4.0"),
     "Poicephalus senegalus": ("Senegal-parrot-montage-2.jpg", "ThomHasi", "CC BY 2.5"),
@@ -256,12 +256,42 @@ PHOTOS = {
 }
 
 
+# صور اخترتها بنفسي (في مجلد images). لو موجودة صورة للنوع هنا، تنعرض بدل صورة ويكيميديا
+IMAGES_DIR = Path(__file__).parent / "images"
+
+
+def local_photo(species):
+    """مسار الصورة المحلية لو موجودة (مثلاً images/pyrrhura_molinae.jpg)."""
+    p = IMAGES_DIR / (species.lower().replace(" ", "_") + ".jpg")
+    return p if p.exists() else None
+
+
+@lru_cache(maxsize=None)
+def _as_data_uri(path):
+    # نحوّل الصورة لنص base64 عشان تنعرض داخل HTML بدون سيرفر صور
+    return "data:image/jpeg;base64," + base64.b64encode(Path(path).read_bytes()).decode()
+
+
+def has_photo(species):
+    return species in PHOTOS or local_photo(species) is not None
+
+
 def photo_url(species, width=500):
-    """رابط الصورة من ويكيميديا (يحوّل تلقائياً للحجم المطلوب)."""
-    from urllib.parse import quote
+    """الصورة المحلية أولاً، وإلا رابط ويكيميديا (يحوّل تلقائياً للحجم المطلوب)."""
+    p = local_photo(species)
+    if p is not None:
+        return _as_data_uri(str(p))
     if species not in PHOTOS:
         return None
     return f"https://commons.wikimedia.org/wiki/Special:FilePath/{quote(PHOTOS[species][0])}?width={width}"
+
+
+def photo_credit(species):
+    """اسم المصوّر والرخصة (لصور ويكيميديا فقط)."""
+    if local_photo(species) is not None or species not in PHOTOS:
+        return ""
+    _, author, lic = PHOTOS[species]
+    return f"📷 {author} · {lic} · Wikimedia Commons"
 
 
 # ─────────────── لعبة: أي ببغاء يناسبك؟ ───────────────
@@ -277,7 +307,6 @@ PET_PROFILE = {
     "Agapornis personatus":  dict(size=1, noise=2, talk=0, life=20, care=1, easy=True),
     "Agapornis roseicollis": dict(size=1, noise=2, talk=0, life=20, care=1, easy=True),
     "Psittacus erithacus":   dict(size=2, noise=2, talk=3, life=60, care=3, easy=False),
-    "Psittacus timneh":      dict(size=2, noise=2, talk=3, life=60, care=3, easy=False),
     "Myiopsitta monachus":   dict(size=2, noise=3, talk=2, life=20, care=2, easy=True),
     "Alexandrinus krameri":  dict(size=2, noise=3, talk=2, life=30, care=2, easy=True),
     "Poicephalus senegalus": dict(size=1, noise=1, talk=2, life=50, care=2, easy=True),
