@@ -399,8 +399,12 @@ with tab_story:
             st.rerun()
         if size_ans:
             tr = parrots[parrots["in_trade"]]
-            rho_m = np.log10(parrots["total_traded"] + 1).corr(np.log10(parrots["mass_g"]), method="spearman")
-            rho_r = np.log10(parrots["total_traded"] + 1).corr(np.log10(parrots["range_km2"]), method="spearman")
+            # سبيرمان = ارتباط بيرسون بين الترتيب (rank)، كذا ما نحتاج مكتبة scipy
+            def spearman(x, y):
+                ok = x.notna() & y.notna()
+                return x[ok].rank().corr(y[ok].rank())
+            rho_m = spearman(parrots["total_traded"], parrots["mass_g"])
+            rho_r = spearman(parrots["total_traded"], parrots["range_km2"])
             html(f'<div class="reveal" style="text-align:right"><b class="{"ok" if size_ans == "no" else "no"}">'
                  f'{"صح! 👏" if size_ans == "no" else "مفاجأة:"}</b> الحجم تقريباً ما يفرق (الارتباط {rho_m:.2f} بس). '
                  f'اللي يفرق فعلاً هو <b>كم النوع منتشر في الطبيعة</b> ({rho_r:.2f}): الأنواع المنتشرة أسهل وأرخص، '
