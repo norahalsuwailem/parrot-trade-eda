@@ -14,7 +14,8 @@ import pycountry
 import streamlit as st
 
 from content_ar import (CITES_FAMILY, DIET_AR, FAMILY_AR, FEATURED, GULF, HABITAT_AR,
-                        HOME_DIET, SOURCE_AR, country_ar, display_name, name_ar)
+                        HOME_DIET, PET_PROFILE, PHOTOS, SOURCE_AR, country_ar, display_name,
+                        name_ar, photo_url)
 from parrot_art import parrot_svg
 
 st.set_page_config(page_title="ريش بلا حدود 🦜", page_icon="🦜", layout="wide")
@@ -83,10 +84,57 @@ section[data-testid="stSidebar"] { background: #0F2A1F; border-left: 1px solid #
 .album .s { font-size: 13px; color: #A9B8AE; font-style: italic; }
 .album .t { font-size: 15px; color: #F2B705; font-weight: 700; margin-top: 4px; }
 
-.stTabs [data-baseweb="tab-list"] { gap: 6px; flex-wrap: wrap; }
-.stTabs [data-baseweb="tab"] { background: rgba(244,239,227,.05); border-radius: 12px 12px 0 0;
-                               padding: 10px 16px; font-size: 17px; }
-.stTabs [aria-selected="true"] { background: rgba(242,183,5,.16) !important; }
+.stTabs [data-baseweb="tab-list"] { gap: 8px; flex-wrap: wrap; border-bottom: none; }
+.stTabs [data-baseweb="tab"] { background: rgba(244,239,227,.05); border: 1px solid rgba(244,239,227,.10);
+                               border-radius: 14px; padding: 10px 18px; font-size: 17px; font-weight: 700;
+                               transition: all .2s; }
+.stTabs [data-baseweb="tab"]:hover { background: rgba(242,183,5,.10); transform: translateY(-2px); }
+.stTabs [aria-selected="true"] { background: linear-gradient(135deg, rgba(242,183,5,.30), rgba(230,57,70,.22)) !important;
+                                 border-color: rgba(242,183,5,.55) !important; }
+.stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] { display: none; }
+
+/* ── الحركة في الهيدر ── */
+.hero { position: relative; overflow: hidden; }
+.hero .birds svg { animation: bob 3.2s ease-in-out infinite; }
+.hero .birds svg:nth-child(2) { animation-delay: .5s; }
+.hero .birds svg:nth-child(3) { animation-delay: 1s; }
+.hero .birds svg:nth-child(4) { animation-delay: 1.5s; }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(-3deg); } }
+.hero > div:not(.flyer) { position: relative; z-index: 1; }
+.flyer { z-index: 0; position: absolute; top: 8px; left: -120px; opacity: .9; pointer-events: none;
+         animation: fly 14s linear infinite; }
+@keyframes fly { 0% { left: -120px; top: 60%; } 50% { top: 8%; } 100% { left: 105%; top: 40%; } }
+.flyer svg { transform: scaleX(-1); animation: flap .35s ease-in-out infinite alternate; }
+@keyframes flap { from { transform: scaleX(-1) rotate(-6deg); } to { transform: scaleX(-1) rotate(6deg); } }
+.kpi { transition: transform .2s, border-color .2s; }
+.kpi:hover { transform: translateY(-4px); border-color: rgba(242,183,5,.45); }
+
+/* ── الصور الحقيقية ── */
+.photo { border-radius: 20px; overflow: hidden; border: 1px solid rgba(244,239,227,.14);
+         background: rgba(244,239,227,.04); }
+.photo img { width: 100%; display: block; object-fit: cover; transition: transform .4s; }
+.photo:hover img { transform: scale(1.04); }
+.photo .cap { font-size: 12px; color: #93A399; padding: 6px 10px; direction: ltr; text-align: left; }
+.album { transition: transform .2s, border-color .2s; }
+.album:hover { transform: translateY(-5px); border-color: rgba(242,183,5,.5); }
+.album .ph { width: 100%; height: 190px; object-fit: cover; border-radius: 14px; margin-bottom: 8px; }
+
+/* ── اللعبة والمقارنة ── */
+.match { background: rgba(244,239,227,.05); border: 1px solid rgba(244,239,227,.12); border-radius: 22px;
+         padding: 14px; text-align: center; height: 100%; }
+.match.win { border: 2px solid #F2B705; background: rgba(242,183,5,.08); }
+.match .pct { font-size: 40px; font-weight: 900; color: #F2B705; line-height: 1; }
+.match .why { text-align: right; font-size: 15px; line-height: 1.9; color: #E2E8E0; margin-top: 8px; }
+.medal { font-size: 30px; }
+.vs { font-size: 46px; font-weight: 900; color: #F2B705; text-align: center; padding-top: 120px; }
+.cmp { width: 100%; border-collapse: collapse; font-size: 17px; }
+.cmp td { padding: 10px 12px; border-bottom: 1px solid rgba(244,239,227,.08); text-align: center; color: #EDE7D8; }
+.cmp td.k { color: #A9B8AE; font-size: 15px; }
+.cmp td.w { color: #8AC926; font-weight: 900; }
+
+/* ── الفلاتر (pills) ── */
+section[data-testid="stSidebar"] [data-testid="stButtonGroup"] { direction: rtl; }
+section[data-testid="stSidebar"] [data-testid="stButtonGroup"] button { border-radius: 999px; }
 .foot { color: #7F8F85; font-size: 13px; margin-top: 30px; text-align: center; }
 </style>
 """, unsafe_allow_html=True)
@@ -123,6 +171,14 @@ def insight(html):
 def svg(species, family="True parrots", size=220):
     st.markdown(f'<div style="text-align:center">{parrot_svg(species, family, size)}</div>',
                 unsafe_allow_html=True)
+
+
+def photo_html(species, h=320):
+    """صورة حقيقية من ويكيميديا مع اسم المصوّر والرخصة."""
+    file, author, lic = PHOTOS[species]
+    return (f'<div class="photo"><img src="{photo_url(species, 600)}" style="height:{h}px" loading="lazy" '
+            f'alt="{name_ar(species)}">'
+            f'<div class="cap">📷 {author} · {lic} · Wikimedia Commons</div></div>')
 
 
 # ═══════════════════════════ قراءة البيانات ═══════════════════════════
@@ -168,15 +224,16 @@ with st.sidebar:
 
     yr = st.slider("السنوات", 1975, 2024, (1975, 2024))
 
+    # pills = أزرار صغيرة تنضغط (أرتب من المربعات الصفراء)، ولو ما اخترتي شي نعتبره الكل
     src_all = list(SOURCE_AR.values())
-    sources = st.multiselect("مصدر الطيور", src_all, default=src_all)
+    sources = st.pills("مصدر الطيور", src_all, selection_mode="multi", default=src_all) or src_all
 
     fam_all = list(FAMILY_AR.values())
-    fams_ar = st.multiselect("العائلة", fam_all, default=fam_all)
+    fams_ar = st.pills("العائلة", fam_all, selection_mode="multi", default=fam_all) or fam_all
     fams = [k for k, v in FAMILY_AR.items() if v in fams_ar]
 
     diet_all = list(DIET_AR.values())
-    diets_ar = st.multiselect("نوع الأكل (في الطبيعة)", diet_all, default=diet_all)
+    diets_ar = st.pills("نوع الأكل (في الطبيعة)", diet_all, selection_mode="multi", default=diet_all) or diet_all
     diets = [k for k, v in DIET_AR.items() if v in diets_ar]
 
     mass = st.slider("الوزن (جرام)", 0, 1800, (0, 1800), step=10)
@@ -199,8 +256,10 @@ if T.empty or P.empty:
 # ═══════════════════════════ الواجهة الرئيسية ═══════════════════════════
 hero_birds = "".join(parrot_svg(s, size=96) for s in
                      ["Ara macao", "Pyrrhura molinae", "Cacatua galerita", "Agapornis fischeri"])
+flyer = parrot_svg("Ara macao", size=70)
 st.markdown(f"""
 <div class="hero">
+  <div class="flyer">{flyer}</div>
   <div>
     <div class="kicker">٥٠ سنة · ٤٠٤ نوع · أكثر من ٢٠٠ دولة</div>
     <div class="title">ريش بلا حدود</div>
@@ -221,11 +280,14 @@ for col, (v, l, c) in zip(st.columns(4), kpis):
 st.caption(f"*من الطيور اللي مصدرها معروف · {yr[0]}–{yr[1]}")
 st.write("")
 
-tabs = st.tabs(["🌍 التجارة العالمية", "🦜 تعرّف على ببغاء", "🖼️ ألبوم الببغاوات",
-                "🪶 صفات الببغاوات", "⚠️ منطقة الخطر", "🇸🇦 السعودية والخليج", "📋 البيانات"])
+tabs = st.tabs(["🌍 التجارة العالمية", "🦜 تعرّف على ببغاء", "⚖️ قارني بين ببغاوين",
+                "🎯 أي ببغاء يناسبك؟", "🖼️ ألبوم الببغاوات", "🪶 صفات الببغاوات",
+                "⚠️ منطقة الخطر", "🇸🇦 السعودية والخليج", "📋 البيانات"])
+(tab_trade, tab_meet, tab_cmp, tab_quiz, tab_album,
+ tab_traits, tab_danger, tab_gulf, tab_data) = tabs
 
 # ───────────────────────── ١. التجارة العالمية ─────────────────────────
-with tabs[0]:
+with tab_trade:
     c1, c2 = st.columns([1.35, 1])
     with c1:
         side = st.radio("عرض الخريطة", ["الدول المصدّرة", "الدول المستوردة"], horizontal=True,
@@ -252,6 +314,34 @@ with tabs[0]:
         fig.update_xaxes(range=[0, top.max() * 1.3], visible=False)
         st.plotly_chart(style(fig, "أكبر 12 دولة " + ("مصدّرة" if key == "exporter" else "مستوردة"), 450),
                         width="stretch")
+
+    # 🎬 خريطة متحركة: كل إطار = 5 سنوات، واضغطي ▶️ عشان تشوفين التجارة تتغير
+    with st.expander("🎬 شاهدي الخريطة تتحرك عبر 50 سنة (اضغطي ▶️)", expanded=True):
+        # كل إطار = 5 سنوات (السنة الوحدة بالسبعينات فيها بيانات قليلة)
+        T5 = T.assign(period=(T["year"] // 5 * 5).astype(str) + "–" + (T["year"] // 5 * 5 + 4).astype(str))
+        anim = (T5.groupby(["period", f"{key}_iso3", f"{key}_ar"])["quantity"].sum()
+                .reset_index().dropna().sort_values("period"))
+        anim["log_q"] = np.log10(anim["quantity"])
+        fig = px.choropleth(anim, locations=f"{key}_iso3", color="log_q", animation_frame="period",
+                            hover_name=f"{key}_ar", hover_data={"quantity": ":,", "log_q": False,
+                                                                f"{key}_iso3": False, "period": False},
+                            range_color=(0, anim["log_q"].max()),
+                            color_continuous_scale=["#13372a", JUNGLE, LEAF, GOLD, SCARLET],
+                            labels={"quantity": "طير", "period": "الفترة"})
+        fig.update_traces(marker_line_color=DEEP, marker_line_width=.4)
+        fig.update_geos(bgcolor="rgba(0,0,0,0)", showframe=False, showcoastlines=False,
+                        landcolor="#173a2b", showland=True, projection_type="natural earth",
+                        lataxis_range=[-58, 85])
+        fig.update_coloraxes(colorbar=dict(title="طير", tickvals=[1, 2, 3, 4, 5, 6],
+                                           ticktext=["10", "100", "1k", "10k", "100k", "1M"], len=.6))
+        # السرعة: كل فترة 900 ملي ثانية
+        fig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 900
+        fig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 300
+        fig.layout.sliders[0].currentvalue.prefix = "الفترة: "
+        st.plotly_chart(style(fig, "التجارة كل 5 سنوات: " + ("مين يصدّر؟" if key == "exporter" else "مين يستورد؟"), 560),
+                        width="stretch")
+        st.caption("لاحظي كيف تتغير ألوان الدول بعد حظر أمريكا (1992) وحظر أوروبا (2005)، "
+                   "وكيف ينتقل الطلب لآسيا والشرق الأوسط في السنين الأخيرة.")
 
     yearly = T.groupby(["year", "source_ar"])["quantity"].sum().reset_index()
     fig = px.area(yearly, x="year", y="quantity", color="source_ar", color_discrete_map=SOURCE_COLORS,
@@ -285,7 +375,7 @@ with tabs[0]:
             "أغلبها مُربّى في الأسر، ورايحة لجنوب آسيا والشرق الأوسط.")
 
 # ───────────────────────── ٢. تعرّف على ببغاء ─────────────────────────
-with tabs[1]:
+with tab_meet:
     order = parrots.sort_values("total_traded", ascending=False)
     options = order["species"].tolist()
     default = options.index("Pyrrhura molinae") if "Pyrrhura molinae" in options else 0
@@ -302,7 +392,15 @@ with tabs[1]:
 
     c1, c2 = st.columns([1, 1.4])
     with c1:
-        svg(pick, b["family"], 300)
+        # لو عندنا صورة حقيقية، نخلي المستخدم يختار: صورة أو رسمة
+        view = "🎨 رسمة"
+        if pick in PHOTOS:
+            view = st.segmented_control("العرض", ["📷 صورة حقيقية", "🎨 رسمة"], default="📷 صورة حقيقية",
+                                        key="meet_view", label_visibility="collapsed") or "📷 صورة حقيقية"
+        if view.startswith("📷"):
+            st.markdown(photo_html(pick, 340), unsafe_allow_html=True)
+        else:
+            svg(pick, b["family"], 300)
         if info:
             st.markdown(f'<div class="fact">✨ {info["fact"]}</div>', unsafe_allow_html=True)
     with c2:
@@ -366,26 +464,174 @@ with tabs[1]:
                           showframe=False, projection_type="natural earth", lataxis_range=[-58, 85])
             cc3.plotly_chart(style(f, "وين يعيش في الطبيعة؟", 300), width="stretch")
 
-# ───────────────────────── ٣. ألبوم الببغاوات ─────────────────────────
-with tabs[2]:
+# ───────────────────────── ٣. قارني بين ببغاوين ─────────────────────────
+def pic_or_svg(species, family, h=260):
+    """صورة حقيقية لو موجودة، وإلا رسمة."""
+    if species in PHOTOS:
+        return photo_html(species, h)
+    return f'<div style="text-align:center">{parrot_svg(species, family, h - 40)}</div>'
+
+
+with tab_cmp:
+    st.markdown("### ⚖️ قارني بين ببغاوين")
+    opts = parrots.sort_values("total_traded", ascending=False)["species"].tolist()
+    c1, cm, c2 = st.columns([1, .25, 1])
+    a = c1.selectbox("الببغاء الأول", opts, index=opts.index("Pyrrhura molinae"), format_func=display_name, key="cmp_a")
+    bb = c2.selectbox("الببغاء الثاني", opts, index=opts.index("Agapornis fischeri"), format_func=display_name, key="cmp_b")
+    A = parrots[parrots["species"] == a].iloc[0]
+    B = parrots[parrots["species"] == bb].iloc[0]
+    with c1:
+        st.markdown(pic_or_svg(a, A["family"]), unsafe_allow_html=True)
+    cm.markdown('<div class="vs">VS</div>', unsafe_allow_html=True)
+    with c2:
+        st.markdown(pic_or_svg(bb, B["family"]), unsafe_allow_html=True)
+
+    def val(x, f="{:,.0f}"):
+        return f.format(x) if pd.notna(x) else "–"
+
+    # (العنوان، العمود، التنسيق، مين يفوز: الأكبر ولا الأصغر ولا ما فيه فايز)
+    rows = [("⚖️ الوزن (جم)", "mass_g", "{:,.0f}", None),
+            ("📏 طول الجناح (مم)", "wing_length_mm", "{:,.0f}", None),
+            ("🌍 مساحة الانتشار (كم²)", "range_km2", "{:,.0f}", "max"),
+            ("📦 طيور انتقلت بين الدول", "total_traded", "{:,.0f}", None),
+            ("🏆 ترتيبه في التجارة", "rank", "#{:.0f}", None),
+            ("🌿 نسبة المصطاد من البرية", "wild_share", "{:.1%}", "min"),
+            ("🚢 دول صدّرته", "n_exporters", "{:,.0f}", None)]
+    html = (f'<table class="cmp"><tr><td class="w" style="color:#F4EFE3">{name_ar(a)}</td><td></td>'
+            f'<td class="w" style="color:#F4EFE3">{name_ar(bb)}</td></tr>')
+    for label, col, f, win in rows:
+        va, vb = A[col], B[col]
+        ca = cb = ""
+        if win and pd.notna(va) and pd.notna(vb) and va != vb:
+            better_a = (va > vb) if win == "max" else (va < vb)
+            ca, cb = ("w", "") if better_a else ("", "w")
+        html += f'<tr><td class="{ca}">{val(va, f)}</td><td class="k">{label}</td><td class="{cb}">{val(vb, f)}</td></tr>'
+    html += (f'<tr><td>{A["diet_ar"]}</td><td class="k">🍽️ الأكل (في الطبيعة)</td><td>{B["diet_ar"]}</td></tr>'
+             f'<tr><td>{A["habitat_ar"]}</td><td class="k">🌳 البيئة</td><td>{B["habitat_ar"]}</td></tr></table>')
+    st.markdown(html, unsafe_allow_html=True)
+    st.caption("🟢 الأخضر = الأحسن للطير نفسه: انتشار أكبر في الطبيعة، ونسبة أقل مصطادة من البرية.")
+
+    both = (trade[trade["species"].isin([a, bb])].groupby(["year", "species"])["quantity"].sum()
+            .reset_index().assign(name=lambda d: d["species"].map(name_ar)))
+    if not both.empty:
+        fig = px.line(both, x="year", y="quantity", color="name", markers=True,
+                      color_discrete_sequence=[GOLD, MACAW],
+                      labels={"year": "السنة", "quantity": "عدد الطيور", "name": ""})
+        fig.update_layout(legend=dict(orientation="h", y=-.2))
+        st.plotly_chart(style(fig, "تجارتهم عبر السنين", 380), width="stretch")
+
+    # الحجم الحقيقي: نرسم الطيرين بنسبة طول الجناح
+    if pd.notna(A["wing_length_mm"]) and pd.notna(B["wing_length_mm"]):
+        big = max(A["wing_length_mm"], B["wing_length_mm"])
+        sa_, sb_ = (int(60 + 180 * A["wing_length_mm"] / big), int(60 + 180 * B["wing_length_mm"] / big))
+        st.markdown(f"""<div class="card" style="text-align:center">
+          <div style="font-weight:800;font-size:20px;margin-bottom:8px">📐 الحجم الحقيقي جنب بعض</div>
+          <div style="display:flex;justify-content:center;align-items:flex-end;gap:50px">
+            <div>{parrot_svg(a, A['family'], sa_)}<div>{name_ar(a)}</div></div>
+            <div>{parrot_svg(bb, B['family'], sb_)}<div>{name_ar(bb)}</div></div>
+          </div></div>""", unsafe_allow_html=True)
+
+# ───────────────────────── ٤. أي ببغاء يناسبك؟ ─────────────────────────
+with tab_quiz:
+    st.markdown("### 🎯 أي ببغاء يناسبك؟")
+    st.caption("جاوبي على 6 أسئلة، وأطلع لك أنسب 3 ببغاوات من 16 نوع مشهور. (تقريبي وللمتعة 😄)")
+    q1, q2 = st.columns(2)
+    space = q1.radio("🏠 وين بيعيش الطير؟", ["شقة صغيرة", "شقة كبيرة أو بيت", "بيت كبير وفيه غرفة للطير"], index=1)
+    noise = q2.radio("🔊 كم تتحملين الإزعاج؟", ["لازم يكون هادئ", "شوي عادي", "ما يهمني أبداً"], index=1)
+    talk = q1.radio("🗣️ تبينه يتكلم؟", ["إيه، هذا أهم شي", "حلو لو يتكلم بس مو شرط", "ما يهمني"], index=1)
+    time = q2.radio("⏰ كم ساعة تقدرين تجلسين معه كل يوم؟", ["ساعة أو أقل", "ساعتين إلى ثلاث", "أغلب اليوم"], index=1)
+    years = q1.radio("⏳ كم سنة تقدرين تلتزمين فيه؟", ["10 إلى 20 سنة", "20 إلى 40 سنة", "طول العمر 💍"], index=1)
+    exp = q2.radio("🎓 خبرتك مع الطيور؟", ["هذا أول ببغاء لي", "عندي خبرة"], index=0)
+
+    max_size = {"شقة صغيرة": 1, "شقة كبيرة أو بيت": 2}.get(space, 3)
+    max_noise = {"لازم يكون هادئ": 1, "شوي عادي": 3}.get(noise, 4)
+    max_care = {"ساعة أو أقل": 1, "ساعتين إلى ثلاث": 2}.get(time, 3)
+    max_life = {"10 إلى 20 سنة": 20, "20 إلى 40 سنة": 40}.get(years, 100)
+
+    results = []
+    for s, p in PET_PROFILE.items():
+        score, why = 100, []
+        if p["size"] > max_size:
+            score -= 30 * (p["size"] - max_size); why.append("⚠️ يحتاج مساحة أكبر")
+        else:
+            why.append("✅ حجمه مناسب لمكانك")
+        if p["noise"] > max_noise:
+            score -= 25 * (p["noise"] - max_noise); why.append("⚠️ صوته أعلى من اللي تتحملينه")
+        else:
+            why.append("✅ صوته مقبول لك")
+        if talk.startswith("إيه"):
+            score -= 20 * max(0, 2 - p["talk"])
+            why.append("✅ يتكلم كويس" if p["talk"] >= 2 else "⚠️ كلامه قليل")
+        elif talk.startswith("حلو"):
+            score -= 5 * max(0, 2 - p["talk"])
+        if p["care"] > max_care:
+            score -= 25 * (p["care"] - max_care); why.append("⚠️ يحتاج وقت واهتمام أكثر")
+        else:
+            why.append("✅ يناسب وقتك")
+        if p["life"] > max_life:
+            score -= 20 if p["life"] - max_life <= 20 else 35; why.append(f"⚠️ ممكن يعيش {p['life']} سنة")
+        if exp.startswith("هذا") and not p["easy"]:
+            score -= 30; why.append("⚠️ يحتاج خبرة")
+        # فروق صغيرة عشان ما يتعادلون كلهم على 100%
+        if not noise.startswith("ما يهمني"):
+            score -= 3 * (p["noise"] - 1)
+        if not time.startswith("أغلب"):
+            score -= 3 * (p["care"] - 1)
+        if not talk.startswith("ما يهمني"):
+            score -= 2 * (3 - p["talk"])
+        # آخر شي: الأقل صيداً من البرية يتقدّم (أفضل للطيور)
+        r_ = parrots.loc[parrots["species"] == s, "wild_share"]
+        if len(r_) and pd.notna(r_.iloc[0]):
+            score -= round(10 * r_.iloc[0])
+        results.append((max(score, 0), s, why))
+    results.sort(key=lambda x: -x[0])
+
+    st.write("")
+    medals = ["🥇", "🥈", "🥉"]
+    cols = st.columns(3)
+    for i, (score, s, why) in enumerate(results[:3]):
+        r = parrots[parrots["species"] == s].iloc[0]
+        wild = f"{r['wild_share']:.0%}" if pd.notna(r["wild_share"]) else "–"
+        with cols[i]:
+            st.markdown(f"""<div class="match {'win' if i == 0 else ''}">
+              <div class="medal">{medals[i]}</div>
+              {pic_or_svg(s, r['family'], 220)}
+              <div class="n" style="font-size:22px;font-weight:900;margin-top:8px">{FEATURED[s]['emoji']} {name_ar(s)}</div>
+              <div class="pct">{score}%</div><div style="color:#A9B8AE">نسبة التوافق</div>
+              <div class="why">{'<br>'.join(why[:5])}<br>🌿 من البرية: {wild} من تجارته</div>
+            </div>""", unsafe_allow_html=True)
+    insight("مهما اخترتي، <b>اشتري طير مُربّى في الأسر</b> من مربّي موثوق. الطيور المصطادة من البرية "
+            "تتأذى في النقل، وصيدها يضر الأنواع اللي موطنها صغير (شوفي تبويب ⚠️ منطقة الخطر).")
+
+# ───────────────────────── ٥. ألبوم الببغاوات ─────────────────────────
+with tab_album:
     st.markdown("### 🖼️ أشهر الببغاوات في التجارة")
-    st.caption("رسومات تقريبية بألوان كل نوع. للتفاصيل اختاري النوع من تبويب «تعرّف على ببغاء».")
+    a1, a2 = st.columns([1, 2])
+    album_view = a1.segmented_control("العرض", ["📷 صور حقيقية", "🎨 رسومات"], default="📷 صور حقيقية",
+                                      key="album_view", label_visibility="collapsed") or "📷 صور حقيقية"
+    a2.caption("الصور من Wikimedia Commons، والرسومات مرسومة بالكود بألوان كل نوع. "
+               "للتفاصيل اختاري النوع من تبويب «تعرّف على ببغاء».")
     album = parrots[parrots["species"].isin(FEATURED)].sort_values("total_traded", ascending=False)
     cols = st.columns(4)
     for i, (_, r) in enumerate(album.iterrows()):
         f = FEATURED[r["species"]]
         traded = fmt(r["total_traded"]) + " طير" if r["total_traded"] else "ما انباع أبداً 🌿"
+        if album_view.startswith("📷") and r["species"] in PHOTOS:
+            pic = (f'<img class="ph" src="{photo_url(r["species"], 400)}" loading="lazy" '
+                   f'title="📷 {PHOTOS[r["species"]][1]} · {PHOTOS[r["species"]][2]}">')
+        else:
+            pic = parrot_svg(r["species"], r["family"], 170)
         with cols[i % 4]:
             st.markdown(f"""
             <div class="album">
-              {parrot_svg(r['species'], r['family'], 170)}
+              {pic}
               <div class="n">{f['emoji']} {f['ar']}</div>
               <div class="s">{r['species']}</div>
               <div class="t">{traded}</div>
             </div>""", unsafe_allow_html=True)
 
-# ───────────────────────── ٤. صفات الببغاوات ─────────────────────────
-with tabs[3]:
+# ───────────────────────── ٦. صفات الببغاوات ─────────────────────────
+with tab_traits:
     sp = TS.groupby("species")["quantity"].sum().rename("traded")
     PP = P.drop(columns="total_traded").merge(sp, on="species", how="left").fillna({"traded": 0})
     PP["traded_plot"] = PP["traded"].clip(lower=1)
@@ -441,8 +687,8 @@ with tabs[3]:
                         zmin=-1, zmax=1, aspect="auto")
         st.plotly_chart(style(fig, "الارتباط بين الصفات والتجارة", 360), width="stretch")
 
-# ───────────────────────── ٥. منطقة الخطر ─────────────────────────
-with tabs[4]:
+# ───────────────────────── ٧. منطقة الخطر ─────────────────────────
+with tab_danger:
     st.markdown("### ⚠️ أنواع موطنها صغير، وانصاد منها آلاف من البرية")
     c1, c2 = st.columns(2)
     max_range = c1.select_slider("«موطن صغير» يعني أقل من…", options=[10_000, 25_000, 50_000, 100_000, 250_000],
@@ -484,8 +730,8 @@ with tabs[4]:
     insight("أغلب هالأنواع <b>لوري وكوكاتو من جزر إندونيسيا وميلانيزيا</b>. موطنها كامل أصغر من "
             "<b>منطقة القصيم</b>، ومع ذلك انصاد منها آلاف. و<b>كوكاتو غوفين</b> موطنه حوالي 4,000 كم² بس!")
 
-# ───────────────────────── ٦. السعودية والخليج ─────────────────────────
-with tabs[5]:
+# ───────────────────────── ٨. السعودية والخليج ─────────────────────────
+with tab_gulf:
     G = T[T["importer_code"].isin(GULF)].assign(country=lambda d: d["importer_code"].map(GULF))
     if G.empty:
         st.info("ما فيه واردات خليجية بهالفلاتر.")
@@ -528,8 +774,8 @@ with tabs[5]:
         insight(f"واردات السعودية <b>وقفت تقريباً بين 2005 و2014</b>، وبعدها رجعت بقوة: "
                 f"<b>{after:.0%}</b> من كل الببغاوات اللي دخلت المملكة وصلت <b>بعد 2016</b>، وأكثرها <b>طيور الحب</b> 🧡")
 
-# ───────────────────────── ٧. البيانات ─────────────────────────
-with tabs[6]:
+# ───────────────────────── ٩. البيانات ─────────────────────────
+with tab_data:
     which = st.radio("الجدول", ["جدول الأنواع (المدموج)", "سجلات التجارة (النظيفة)"], horizontal=True)
     if which.startswith("جدول الأنواع"):
         df = P.drop(columns=["diet_ar", "habitat_ar", "family_ar", "name", "rank"])

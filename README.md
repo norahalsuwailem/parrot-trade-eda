@@ -67,19 +67,21 @@ This project joins **two real datasets** to answer that question:
 
 ## 🎛️ The dashboard (Arabic, RTL)
 
-An interactive **Arabic** Streamlit dashboard, with a hand-drawn illustration of each featured species in its real colours.
+An interactive **Arabic** Streamlit dashboard, with real photos (Wikimedia Commons) and a hand-drawn illustration of each featured species in its real colours.
 
 | Tab | What it shows |
 |---|---|
-| 🌍 التجارة العالمية | World map, top countries, yearly trade by source with the 1992 and 2005 bans marked, Sankey of the biggest trade routes |
-| 🦜 تعرّف على ببغاء | Pick any species and see its illustration, size rank, wild share, range map, trade history and care notes for pet species |
-| 🖼️ ألبوم الببغاوات | An album of 20 well-known species |
+| 🌍 التجارة العالمية | World map, an animated map over 50 years (▶️), top countries, yearly trade by source with the 1992 and 2005 bans marked, Sankey of the biggest trade routes |
+| 🦜 تعرّف على ببغاء | Pick any species and see a real photo or illustration, size rank, wild share, range map, trade history and care notes for pet species |
+| ⚖️ قارني بين ببغاوين | Put two species side by side: photos, a stats table, trade over time and their real size |
+| 🎯 أي ببغاء يناسبك؟ | A 6-question quiz (space, noise, talking, time, years, experience) that suggests the 3 best pet parrots |
+| 🖼️ ألبوم الببغاوات | An album of 20 well-known species, as real photos or illustrations |
 | 🪶 صفات الببغاوات | Does size, diet or habitat predict trade? Scatter, bars, box plot, heatmap |
 | ⚠️ منطقة الخطر | Set your own thresholds and see the species at risk |
 | 🇸🇦 السعودية والخليج | GCC imports, what they buy and where it comes from |
 | 📋 البيانات | Data preview, summary statistics and CSV download |
 
-**Sidebar filters:** year slider, body-mass slider, and multiselects for source, family and diet.
+**Sidebar filters:** year slider, body-mass slider, and clickable pills for source, family and diet.
 
 <p align="center">
   <img src="assets/screenshots/02_meet_a_parrot.png" alt="Meet a Parrot tab showing the green-cheeked conure profile" width="49%">
@@ -178,6 +180,7 @@ To re-run the analysis, open `notebooks/parrot_eda.ipynb` and choose **Run All**
 - CITES Secretariat & UNEP-WCMC. *CITES Trade Database*. https://trade.cites.org
 - Tobias, J. A. *et al.* (2022). AVONET: morphological, ecological and geographical data for all birds. *Ecology Letters*, 25, 581–597.
 - Chan, D. T. C., Poon, E. S. K., Wong, A. T. C., & Sin, S. Y. W. (2021). Global trade in parrots – influential factors of trade and implications for conservation. *Global Ecology and Conservation*, 30, e01784.
+- Parrot photos: [Wikimedia Commons](https://commons.wikimedia.org) (photographer and licence shown under each photo)
 - Care notes in the dashboard: [askavet.com](https://askavet.com/blogs/news/parrot-lifespan-2025-vet-guide-by-dr-duncan-houston-bvsc), [Wikipedia](https://en.wikipedia.org/wiki/Green-cheeked_parakeet), [happybirds.hu](https://happybirds.hu/en/parrot-feeding-and-care#pyrrhura)
 
 ---

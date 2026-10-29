@@ -228,3 +228,62 @@ def display_name(species):
     """الاسم اللي يطلع في القوائم: عربي · علمي لو له اسم عربي، وإلا العلمي بس."""
     ar = name_ar(species)
     return f"{ar} · {species}" if ar != species else species
+
+
+# ─────────────── صور حقيقية (Wikimedia Commons) ───────────────
+# (اسم الملف في ويكيميديا، المصوّر، الرخصة)
+PHOTOS = {
+    "Pyrrhura molinae": ("Green-cheeked_Parakeet_(Pyrrhura_molinae_molinae),_Samaipata,_Bolivia_1.jpg", "jeanpaulboerekamps", "CC0"),
+    "Aratinga solstitialis": ("Aratinga_solstitialis_-captive-two-8a.jpg", "Wayne Deeker", "CC BY 3.0"),
+    "Aratinga nenday": ("2011-4_parrot_in_Strasbourg.jpg", "J. Patrick Fischer", "CC BY 3.0"),
+    "Agapornis fischeri": ("Agapornis_fischeri_-Ueno_Zoo,_Japan_-three-8a-4c.jpg", "Takashi H", "CC BY-SA 2.0"),
+    "Agapornis personatus": ("Agapornis_personatus_-Serengeti,_Tanzania-8.jpg", "Demetrius John Kessy", "CC BY 2.0"),
+    "Agapornis roseicollis": ("Rosy-faced_lovebird_(Agapornis_roseicollis_roseicollis)_2.jpg", "Charles J. Sharp", "CC BY-SA 4.0"),
+    "Psittacus erithacus": ("Perroquet_à_Yampopo_Beach_-_Douala.jpg", "Florettesokeng", "CC BY-SA 4.0"),
+    "Psittacus timneh": ("Psittacus_erithacus_timneh-parrot_on_cage.jpg", "Peter Fuchs", "CC BY-SA 2.0"),
+    "Myiopsitta monachus": ("Monk_parakeet_(Myiopsitta_monachus)_Santiago.jpg", "Charles J. Sharp", "CC BY-SA 4.0"),
+    "Alexandrinus krameri": ("African_Rose-ringed_Parakeet,_Tendaba,_Gambia_1.jpg", "danielskatz", "CC BY 4.0"),
+    "Poicephalus senegalus": ("Senegal-parrot-montage-2.jpg", "ThomHasi", "CC BY 2.5"),
+    "Amazona aestiva": ("Turquoise-fronted_amazon_(Amazona_aestiva)_older_adult.JPG", "Charles J. Sharp", "CC BY-SA 4.0"),
+    "Ara ararauna": ("Ara_ararauna_Luc_Viatour.jpg", "Luc Viatour", "CC BY 2.0"),
+    "Ara macao": ("Scarlet_macaw_(Ara_macao_cyanopterus)_Copan.jpg", "Charles J. Sharp", "CC BY-SA 4.0"),
+    "Cacatua galerita": ("Cacatua_galerita_Tas_2.jpg", "JJ Harrison", "CC BY-SA 3.0"),
+    "Cacatua goffiniana": ("Cacatua_goffiniana,_Yamdena,_Tanimbar,_Indonesia_1.jpg", "james_birdtourasia", "CC0"),
+    "Cacatua ducorpsii": ("Salomonenkakadu.jpg", "Sebastian Weingarten", "CC BY-SA 4.0"),
+    "Cacatua alba": ("Cacatua_alba_-Bali_Bird_Park_-crest-8.jpg", "www.viajar24h.com", "CC BY 2.0"),
+    "Eos bornea": ("Eos_bornea_-Taronga_Zoo,_Sydney,_Australia-8a_(1).jpg", "Robert Howie", "CC BY-SA 2.0"),
+    "Strigops habroptila": ("Sirocco_full_length_portrait.jpg", "Department of Conservation (NZ)", "CC BY 2.0"),
+}
+
+
+def photo_url(species, width=500):
+    """رابط الصورة من ويكيميديا (يحوّل تلقائياً للحجم المطلوب)."""
+    from urllib.parse import quote
+    if species not in PHOTOS:
+        return None
+    return f"https://commons.wikimedia.org/wiki/Special:FilePath/{quote(PHOTOS[species][0])}?width={width}"
+
+
+# ─────────────── لعبة: أي ببغاء يناسبك؟ ───────────────
+# تقييم تقريبي مبني على بطاقات الأنواع فوق:
+# size: 1 صغير · 2 متوسط · 3 كبير      noise: 1 هادئ ... 4 عالي جداً
+# talk: 0 نادراً ... 3 ممتاز            life: أقصى عمر تقريبي (سنة)
+# care: كم يحتاج وقت واهتمام كل يوم (1 قليل ... 3 كثير)   easy: مناسب لأول مرة؟
+PET_PROFILE = {
+    "Pyrrhura molinae":      dict(size=1, noise=1, talk=1, life=30, care=2, easy=True),
+    "Aratinga solstitialis": dict(size=2, noise=4, talk=1, life=30, care=2, easy=True),
+    "Aratinga nenday":       dict(size=2, noise=3, talk=2, life=30, care=2, easy=True),
+    "Agapornis fischeri":    dict(size=1, noise=2, talk=0, life=20, care=1, easy=True),
+    "Agapornis personatus":  dict(size=1, noise=2, talk=0, life=20, care=1, easy=True),
+    "Agapornis roseicollis": dict(size=1, noise=2, talk=0, life=20, care=1, easy=True),
+    "Psittacus erithacus":   dict(size=2, noise=2, talk=3, life=60, care=3, easy=False),
+    "Psittacus timneh":      dict(size=2, noise=2, talk=3, life=60, care=3, easy=False),
+    "Myiopsitta monachus":   dict(size=2, noise=3, talk=2, life=20, care=2, easy=True),
+    "Alexandrinus krameri":  dict(size=2, noise=3, talk=2, life=30, care=2, easy=True),
+    "Poicephalus senegalus": dict(size=1, noise=1, talk=2, life=50, care=2, easy=True),
+    "Amazona aestiva":       dict(size=2, noise=3, talk=3, life=70, care=3, easy=False),
+    "Ara ararauna":          dict(size=3, noise=4, talk=2, life=80, care=3, easy=False),
+    "Ara macao":             dict(size=3, noise=4, talk=1, life=80, care=3, easy=False),
+    "Cacatua galerita":      dict(size=3, noise=4, talk=2, life=70, care=3, easy=False),
+    "Cacatua alba":          dict(size=3, noise=4, talk=1, life=70, care=3, easy=False),
+}
