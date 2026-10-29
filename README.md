@@ -73,7 +73,7 @@ An interactive **Arabic** Streamlit dashboard told as a story by **Tsuki**, my g
 |---|---|
 | 📖 القصة | A step-by-step story in 8 screens (next / back): how many parrots, wild vs captive by decade (100-dot chart), *guess the most traded parrot*, *does size matter?*, the danger zone, Saudi Arabia. Includes an animated world map over 50 years |
 | 🦜 الببغاوات | Meet any species (photo or drawing, stats, trade history, range map, care notes), compare two species side by side, and an album of 19 species |
-| 🎯 أي ببغاء يناسبكم؟ | A 6-question quiz (space, noise, talking, time, years, experience) that suggests the 3 best pet parrots |
+| 🎯 أي ببغاء يناسبكم؟ | A 5-question quiz (space, noise, talking, time, experience) that suggests the 3 best pet parrots |
 | 📊 التحليل | World trade (map, top countries, Sankey of routes), parrot traits (scatter, bars, box plot, heatmap) and the danger zone with your own thresholds |
 | 🇸🇦 السعودية والخليج | GCC imports, what they buy and where it comes from |
 | 📋 البيانات | Data preview, summary statistics and CSV download |

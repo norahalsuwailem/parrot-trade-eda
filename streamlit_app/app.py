@@ -570,7 +570,7 @@ with tab_story:
               <div><p class="kicker">خلصت القصة! شكراً إنكم سمعتوني 🎉</p>
               <div class="h2" style="margin:0">دوركم الحين: استكشفوا بنفسكم</div></div></div>
               <p class="center">كل أداة لها تبويب فوق 👆</p>""")
-            tools = [("Aratinga solstitialis", "أي ببغاء يناسبكم؟", "6 أسئلة وتعرفون", C["BUBBLE"]),
+            tools = [("Aratinga solstitialis", "أي ببغاء يناسبكم؟", "5 أسئلة وتعرفون", C["BUBBLE"]),
                      ("Cacatua galerita", "الببغاوات", "تعرّفوا، قارنوا، والألبوم", C["MINT"]),
                      ("Psittacus erithacus", "التحليل", "الخريطة والصفات والخطر", C["CORAL_BG"]),
                      ("Ara macao", "البيانات", "الجداول وتحميل CSV", C["MINT"])]
@@ -747,20 +747,18 @@ with tab_birds:
 # ═══════════════════════════ 🎯 أي ببغاء يناسبكم؟ ═══════════════════════════
 with tab_quiz:
     html('<div class="h2">🎯 أي ببغاء يناسبكم؟</div>')
-    tsuki_says(f"جاوبوا على 6 أسئلة، وأطلع لكم أنسب 3 ببغاوات من {len(PET_PROFILE)} نوع مشهور. (تقريبي وللمتعة 😄)")
+    tsuki_says(f"جاوبوا على 5 أسئلة، وأطلع لكم أنسب 3 ببغاوات من {len(PET_PROFILE)} نوع مشهور. (تقريبي وللمتعة 😄)")
     with st.container(border=True):
         q1, q2 = st.columns(2)
         space_ = q1.radio("🏠 وين بيعيش الطير؟", ["شقة صغيرة", "شقة كبيرة أو بيت", "بيت كبير وفيه غرفة للطير"], index=1)
         noise = q2.radio("🔊 كم تتحملون الإزعاج؟", ["لازم يكون هادئ", "شوي عادي", "ما يهمنا أبداً"], index=1)
         talk = q1.radio("🗣️ تبونه يتكلم؟", ["إيه، هذا أهم شي", "حلو لو يتكلم بس مو شرط", "ما يهمنا"], index=1)
         time = q2.radio("⏰ كم ساعة تقدرون تجلسون معه كل يوم؟", ["ساعة أو أقل", "ساعتين إلى ثلاث", "أغلب اليوم"], index=1)
-        years = q1.radio("⏳ كم سنة تقدرون تلتزمون فيه؟", ["10 إلى 20 سنة", "20 إلى 40 سنة", "أكثر من 40 سنة"], index=1)
-        exp = q2.radio("🎓 خبرتكم مع الطيور؟", ["هذا أول ببغاء لنا", "عندنا خبرة"], index=0)
+        exp = q1.radio("🎓 خبرتكم مع الطيور؟", ["هذا أول ببغاء لنا", "عندنا خبرة"], index=0)
 
     max_size = {"شقة صغيرة": 1, "شقة كبيرة أو بيت": 2}.get(space_, 3)
     max_noise = {"لازم يكون هادئ": 1, "شوي عادي": 3}.get(noise, 4)
     max_care = {"ساعة أو أقل": 1, "ساعتين إلى ثلاث": 2}.get(time, 3)
-    max_life = {"10 إلى 20 سنة": 20, "20 إلى 40 سنة": 40}.get(years, 100)
 
     results = []
     for s, p in PET_PROFILE.items():
@@ -782,8 +780,6 @@ with tab_quiz:
             score -= 25 * (p["care"] - max_care); why.append("⚠️ يحتاج وقت واهتمام أكثر")
         else:
             why.append("✅ يناسب وقتكم")
-        if p["life"] > max_life:
-            score -= 20 if p["life"] - max_life <= 20 else 35; why.append(f"⚠️ ممكن يعيش {p['life']} سنة")
         if exp.startswith("هذا") and not p["easy"]:
             score -= 30; why.append("⚠️ يحتاج خبرة")
         # فروق صغيرة عشان ما يتعادلون كلهم على 100%
