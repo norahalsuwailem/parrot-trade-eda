@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="Feathers & Borders banner: illustrated parrots perched on branches" width="100%">
+  <img src="assets/banner.svg" alt="Parrot Passport (جواز سفر الببغاء) banner: illustrated parrots perched on branches" width="100%">
 </p>
 
 <p align="center">
@@ -11,6 +11,12 @@
   <img src="https://img.shields.io/badge/Dashboard-Arabic%20RTL-F2B705" alt="Arabic dashboard">
 </p>
 
+<p align="center">
+  <a href="https://feathers-and-borders.streamlit.app"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open the live dashboard on Streamlit"></a>
+</p>
+
+<p align="center"><b>🚀 Live dashboard:</b> <a href="https://feathers-and-borders.streamlit.app">feathers-and-borders.streamlit.app</a></p>
+
 <p align="center"><b>Unit 3 Final Project · Data Exploration & Dashboard Development</b><br>
 Tuwaiq Academy · Data Science & AI Bootcamp</p>
 
@@ -18,7 +24,7 @@ Tuwaiq Academy · Data Science & AI Bootcamp</p>
 
 ## 🦜 The story
 
-I own a **green-cheeked conure** 💚. Caring for him made me wonder: *where do pet parrots come from, and what does the trade do to wild birds?*
+I own a green-cheeked conure called **Tsuki** 💚. Caring for him made me wonder: *where do pet parrots come from, and what does the trade do to wild birds?*
 
 This project joins **two real datasets** to answer that question:
 
@@ -82,19 +88,22 @@ An interactive **Arabic** Streamlit dashboard told as a story by **Tsuki**, my g
 **Filters:** one «الفلاتر» button with years, body mass, and clickable pills for source, family and diet.
 
 <p align="center">
-  <img src="assets/screenshots/02_meet_a_parrot.png" alt="Meet a Parrot tab showing the green-cheeked conure profile" width="49%">
-  <img src="assets/screenshots/03_album.png" alt="Parrot album with illustrated species cards" width="49%">
+  <img src="assets/screenshots/01_story_start.png" alt="Story tab: Tsuki the green-cheeked conure introduces the dashboard" width="49%">
+  <img src="assets/screenshots/02_story_guess.png" alt="Story chapter: guess which parrot is traded the most" width="49%">
 </p>
 <p align="center">
-  <img src="assets/screenshots/01_global_trade.png" alt="Global trade tab with world map and yearly trend" width="49%">
-  <img src="assets/screenshots/05_danger_zone.png" alt="Danger zone tab highlighting at-risk island species" width="49%">
+  <img src="assets/screenshots/03_story_dark.png" alt="Story chapter in dark mode: 100 dots showing the wild-caught share per decade" width="49%">
+  <img src="assets/screenshots/04_discoveries.png" alt="Discoveries tab: insights told by Tsuki as chat bubbles" width="49%">
 </p>
 
 <details>
 <summary>More screenshots</summary>
 <p align="center">
-  <img src="assets/screenshots/04_traits.png" alt="Parrot traits tab" width="49%">
-  <img src="assets/screenshots/06_saudi_gulf.png" alt="Saudi Arabia and Gulf tab" width="49%">
+  <img src="assets/screenshots/05_meet_tsuki.png" alt="Meet a parrot: green-cheeked conure profile with photo and care notes" width="49%">
+  <img src="assets/screenshots/07_analysis.png" alt="Analysis tab: world trade map and top exporters" width="49%">
+</p>
+<p align="center">
+  <img src="assets/screenshots/08_gulf.png" alt="Saudi Arabia and Gulf tab" width="49%">
 </p>
 </details>
 
@@ -131,9 +140,10 @@ parrot-trade-eda/
 ├── reports/
 │   └── figures/                  # 11 EDA figures
 ├── streamlit_app/
-│   ├── app.py                    # the Arabic dashboard
+│   ├── app.py                    # the Arabic dashboard (جواز سفر الببغاء)
 │   ├── parrot_art.py             # SVG parrot illustrations
-│   ├── content_ar.py             # Arabic labels, country names, species info
+│   ├── content_ar.py             # Arabic labels, country names, species info, quiz profiles
+│   ├── images/                   # parrot photos (incl. Tsuki 💚)
 │   ├── data/
 │   │   ├── trade_clean.csv       # 161,846 clean trade records
 │   │   └── parrots_clean.csv     # 404 species × 21 columns
