@@ -215,6 +215,7 @@ EXTRA_NAMES = {
     "Eclectus roratus": "الإكلكتوس",
     "Nymphicus hollandicus": "الكوكتيل",
     "Psittacus timneh": "التيمني",
+    "Amazona amazonica": "الأمازون برتقالي الجناح",
 }
 
 
