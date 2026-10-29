@@ -1,6 +1,5 @@
 streamlit>=1.40
-pandas
+pandas>=3.0
 numpy
 plotly
 pycountry
-scipy

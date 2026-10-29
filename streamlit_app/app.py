@@ -251,7 +251,7 @@ def geo_style(fig):
 
 
 # ═══════════════════════════ قراءة البيانات ═══════════════════════════
-@st.cache_data
+@st.cache_resource   # نقرأ البيانات مرة وحدة ونشاركها بين كل الزوار (أخف على الذاكرة من cache_data)
 def load_data():
     data_dir = Path(__file__).parent / "data"   # يشتغل محلياً وعلى Streamlit Cloud
     trade = pd.read_csv(data_dir / "trade_clean.csv", low_memory=False)
@@ -270,6 +270,11 @@ def load_data():
 
     trade["source_ar"] = trade["source"].map(SOURCE_AR)
     trade["family_en"] = trade["family"].map(CITES_FAMILY).fillna("Unknown")
+
+    # النصوص اللي تتكرر كثير نخليها category: تاخذ ذاكرة أقل بكثير (Streamlit Cloud عنده 1GB بس)
+    for col in trade.columns:
+        if trade[col].dtype != "int64":
+            trade[col] = trade[col].astype("category")
 
     parrots["diet_ar"] = parrots["diet"].map(DIET_AR)
     parrots["habitat_ar"] = parrots["habitat"].map(HABITAT_AR)
@@ -1065,8 +1070,17 @@ with tab_data:
         st.dataframe(df.head(500), width="stretch", hide_index=True)
         st.markdown("#### 📊 الإحصائيات")
         st.dataframe(df.describe().T.round(2), width="stretch")
-        st.download_button("⬇️ نزّلوا البيانات المفلترة (CSV)", df.to_csv(index=False).encode("utf-8-sig"),
-                           "parrots_filtered.csv", "text/csv")
+        # نجهّز ملف CSV بس لما أحد يطلبه (الملف كبير ويثقّل الذاكرة لو انعمل كل مرة)
+        if st.button("📦 جهّزوا ملف CSV للتحميل"):
+            st.download_button("⬇️ نزّلوا البيانات المفلترة (CSV)", df.to_csv(index=False).encode("utf-8-sig"),
+                               "parrots_filtered.csv", "text/csv")
 
 html('<div class="foot">جواز سفر الببغاء · نوره السويلم وتسوكي 💚 · البيانات: CITES Trade Database (UNEP-WCMC) '
      'و AVONET (Tobias et al. 2022) · التجارة القانونية المسجّلة فقط، وبيانات 2024 قد تكون ناقصة</div>')
+
+# نرجّع الذاكرة الفاضية للنظام بعد كل تشغيل (pandas يستخدم pyarrow للنصوص)
+try:
+    import pyarrow as pa
+    pa.default_memory_pool().release_unused()
+except Exception:
+    pass
